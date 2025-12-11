@@ -1,0 +1,188 @@
+Group  1
+BSCS/ Block -  D/ 2nd year
+
+Write a Java program to create a class called Employee with private instance variables employee_id, employee_name, and employee_salary. Provide public getter and setter methods to access and modify the id and name variables, but provide a getter method for the salary variable that returns a formatted string.
+
+import java.text.NumberFormat;
+
+public class Employee {
+    private int employee_id;
+    private String employee_name;
+    private double employee_salary;
+
+    public Employee(int employee_id, String employee_name, double employee_salary) {
+        this.employee_id = employee_id;
+        this.employee_name = employee_name;
+        this.employee_salary = employee_salary;
+    }
+
+    public int getEmployeeId() {
+        return employee_id;
+    }
+
+    public void setEmployeeId(int employee_id) {
+        this.employee_id = employee_id;
+    }
+
+    public String getEmployeeName() {
+        return employee_name;
+    }
+
+    public void setEmployeeName(String employee_name) {
+        this.employee_name = employee_name;
+    }
+
+    public String getEmployeeSalary() {
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        return nf.format(employee_salary);
+    }
+
+    public void setEmployeeSalary(double employee_salary) {
+        this.employee_salary = employee_salary;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ID: %d, Name: %s, Salary: %s", employee_id, employee_name, getEmployeeSalary());
+    }
+
+    public static void main(String[] args) {
+        Employee emp = new Employee(101, "Jane Doe", 75000.5);
+        System.out.println(emp);
+
+        emp.setEmployeeId(102);
+        emp.setEmployeeName("John Smith");
+        emp.setEmployeeSalary(88000.75);
+
+        System.out.println("ID: " + emp.getEmployeeId());
+        System.out.println("Name: " + emp.getEmployeeName());
+        System.out.println("Salary: " + emp.getEmployeeSalary());
+    }
+}
+
+
+II. Write a Java program to create a class called Car with private instance variables company_name, model_name, year, and mileage. Provide public getter and setter methods to access and modify the company_name, model_name, and year variables. However, only provide a getter method for the mileage variable.
+-	Create additional features related to each program. (1-2 features with at least different from your groupmate) .
+
+-	Explain the process/algorithms (upon presentation of your output) also study the application in your output of encapsulation and abstraction.
+
+public class CarApp {
+    public static void main(String[] args) {
+        Car c1 = new Car("Toyota", "Corolla", 2015, 60000L);
+        System.out.println("Initial car:");
+        System.out.println(c1);
+        System.out.println("Age (years): " + c1.calculateAge());
+        System.out.printf("Estimated resale (orig price 20000): %.2f%n", c1.estimateResaleValue(20000.0));
+        System.out.println("Maintenance status: " + c1.getMaintenanceStatus());
+        System.out.println();
+
+        c1.setCompanyName("Toyota Motor Corporation");
+        c1.setModelName("Corolla S");
+        c1.setYear(2016);
+        c1.addMileage(1200L);
+
+        System.out.println("After updates:");
+        System.out.println("Company: " + c1.getCompanyName());
+        System.out.println("Model: " + c1.getModelName());
+        System.out.println("Year: " + c1.getYear());
+        System.out.println("Mileage (read-only getter): " + c1.getMileage());
+        System.out.println("Age (years): " + c1.calculateAge());
+        System.out.printf("Estimated resale (orig price 20000): %.2f%n", c1.estimateResaleValue(20000.0));
+        System.out.println("Maintenance status: " + c1.getMaintenanceStatus());
+    }
+}
+
+class Car {
+    private String company_name;
+    private String model_name;
+    private int year;
+    private long mileage;
+
+    public Car(String company_name, String model_name, int year, long mileage) {
+        this.company_name = company_name;
+        this.model_name = model_name;
+        this.year = year;
+        this.mileage = Math.max(0L, mileage);
+    }
+
+    public String getCompanyName() {
+        return company_name;
+    }
+
+    public void setCompanyName(String company_name) {
+        if (company_name == null) throw new IllegalArgumentException("company_name cannot be null");
+        this.company_name = company_name;
+    }
+
+    public String getModelName() {
+        return model_name;
+    }
+
+    public void setModelName(String model_name) {
+        if (model_name == null) throw new IllegalArgumentException("model_name cannot be null");
+        this.model_name = model_name;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        int current = java.time.Year.now().getValue();
+        if (year < 1886 || year > current) throw new IllegalArgumentException("year out of realistic range");
+        this.year = year;
+    }
+
+    public long getMileage() {
+        return mileage;
+    }
+
+    public void addMileage(long miles) {
+        if (miles <= 0) throw new IllegalArgumentException("miles must be positive");
+        mileage += miles;
+    }
+
+    public int calculateAge() {
+        int current = java.time.Year.now().getValue();
+        int age = current - year;
+        return Math.max(0, age);
+    }
+
+    public double estimateResaleValue(double originalPrice) {
+        if (originalPrice <= 0) return 0.0;
+        int age = calculateAge();
+        double value = originalPrice * Math.pow(0.95, age);
+        double mileagePenalty = (mileage / 10000.0) * (originalPrice * 0.02);
+        value -= mileagePenalty;
+        if (value < 0) value = 0.0;
+        return value;
+    }
+
+    public String getMaintenanceStatus() {
+        long interval = 5000L;
+        long nextServiceAt = ((mileage / interval) + 1) * interval;
+        long milesRemaining = nextServiceAt - mileage;
+        if (mileage % interval == 0) return "Service due now (performed at " + mileage + " miles)";
+        return "Next service in " + milesRemaining + " miles (at " + nextServiceAt + " miles)";
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s (%d) - Mileage: %d", company_name, model_name, year, mileage);
+    }
+}
+
+•	The additional features included
+i.	Age calculation: calculateAge() returns the car age in years using the current system year (java.time.Year.now()). This helps when computing depreciation and for display.
+ii.	Resale value estimator and maintenance helper:
+	estimateResaleValue(originalPrice): a simple depreciation model that reduces value by 5% per year (multiplicative) and subtracts a small mileage penalty proportional to every 10,000 miles (2% of original price per 10k miles). The result is floored at 0.
+	getMaintenanceStatus(): computes the next service milestone based on fixed service intervals (5,000 miles) and returns how many miles remain until next service (or that service is due).
+•	Algorithms / process used
+o	Age: currentYear - year, clamped to non-negative.
+o	Depreciation: originalPrice * 0.95^age (annual multiplicative decay).
+o	Mileage penalty: (mileage / 10,000) * (originalPrice * 0.02) — converts mileage to 10k blocks and applies 2% original-price penalty per block, then subtracts from depreciated value.
+o	Maintenance: integer math to compute the next multiple of the service interval greater than current mileage; compute difference.
+•	Encapsulation and abstraction in the application
+o	Encapsulation: Car's fields are private; company_name, model_name and year are accessible and modifiable only through public getters/setters; mileage has no public setter — it's exposed only via a getter and updated via addMileage(long). This protects the internal state from arbitrary external assignment and enables validation (e.g., non-negative mileage, year checks).
+o	Abstraction: the Car class exposes high-level behaviors (calculateAge, estimateResaleValue, getMaintenanceStatus, addMileage) which hide the internal data representation and calculation details. Callers use these methods without needing to know how the value is computed, which cleanly separates interface from implementation.
+
