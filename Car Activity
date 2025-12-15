@@ -1,0 +1,160 @@
+public class CarApp {
+    public static void main(String[] args) {
+
+        Car c1 = new Car(
+                "Toyota",
+                "Corolla",
+                2015,
+                60000L,
+                "ABC-1234",
+                "REG-2020-789",
+                "LIC-987654",
+                5
+        );
+
+        System.out.println("Initial car:");
+        System.out.println(c1);
+        System.out.println("Age (years): " + c1.calculateAge());
+        System.out.printf("Estimated resale (orig price 20000): %.2f%n",
+                c1.estimateResaleValue(20000.0));
+        System.out.println("Maintenance status: " + c1.getMaintenanceStatus());
+        System.out.println("Warranty status: " + c1.getWarrantyStatus());
+        System.out.println();
+
+        c1.setCompanyName("Toyota Motor Corporation");
+        c1.setModelName("Corolla S");
+        c1.setYear(2016);
+        c1.addMileage(1200L);
+        c1.setPlateNumber("XYZ-9999");
+
+        System.out.println("After updates:");
+        System.out.println("Company: " + c1.getCompanyName());
+        System.out.println("Model: " + c1.getModelName());
+        System.out.println("Year: " + c1.getYear());
+        System.out.println("Mileage: " + c1.getMileage());
+        System.out.println("Plate No: " + c1.getPlateNumber());
+        System.out.println("Registration No: " + c1.getRegistrationNumber());
+        System.out.println("License No: " + c1.getLicenseNumber());
+        System.out.println("Warranty status: " + c1.getWarrantyStatus());
+    }
+}
+
+class Car {
+    private String company_name;
+    private String model_name;
+    private int year;
+    private long mileage;
+
+    private String plateNumber;
+    private String registrationNumber;
+    private String licenseNumber;
+    private int warrantyYears;
+
+    public Car(String company_name, String model_name, int year, long mileage,
+               String plateNumber, String registrationNumber,
+               String licenseNumber, int warrantyYears) {
+
+        this.company_name = company_name;
+        this.model_name = model_name;
+        this.year = year;
+        this.mileage = Math.max(0L, mileage);
+
+        this.plateNumber = plateNumber;
+        this.registrationNumber = registrationNumber;
+        this.licenseNumber = licenseNumber;
+        this.warrantyYears = Math.max(0, warrantyYears);
+    }
+
+    public String getCompanyName() {
+        return company_name;
+    }
+
+    public void setCompanyName(String company_name) {
+        if (company_name == null) throw new IllegalArgumentException("company_name cannot be null");
+        this.company_name = company_name;
+    }
+
+    public String getModelName() {
+        return model_name;
+    }
+
+    public void setModelName(String model_name) {
+        if (model_name == null) throw new IllegalArgumentException("model_name cannot be null");
+        this.model_name = model_name;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        int current = java.time.Year.now().getValue();
+        if (year < 1886 || year > current)
+            throw new IllegalArgumentException("year out of realistic range");
+        this.year = year;
+    }
+
+    public long getMileage() {
+        return mileage;
+    }
+
+    public void addMileage(long miles) {
+        if (miles <= 0) throw new IllegalArgumentException("miles must be positive");
+        mileage += miles;
+    }
+
+    public String getPlateNumber() {
+        return plateNumber;
+    }
+
+    public void setPlateNumber(String plateNumber) {
+        if (plateNumber == null) throw new IllegalArgumentException("plate number cannot be null");
+        this.plateNumber = plateNumber;
+    }
+
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public String getLicenseNumber() {
+        return licenseNumber;
+    }
+
+    public int calculateAge() {
+        int current = java.time.Year.now().getValue();
+        return Math.max(0, current - year);
+    }
+
+    public double estimateResaleValue(double originalPrice) {
+        if (originalPrice <= 0) return 0.0;
+
+        int age = calculateAge();
+        double value = originalPrice * Math.pow(0.95, age);
+        value -= (mileage / 10000.0) * (originalPrice * 0.02);
+
+        return Math.max(0.0, value);
+    }
+
+    public String getMaintenanceStatus() {
+        long interval = 5000L;
+        long nextServiceAt = ((mileage / interval) + 1) * interval;
+
+        if (mileage % interval == 0)
+            return "Service due now (performed at " + mileage + " miles)";
+
+        return "Next service in " + (nextServiceAt - mileage)
+                + " miles (at " + nextServiceAt + " miles)";
+    }
+
+    public String getWarrantyStatus() {
+        int age = calculateAge();
+        if (age <= warrantyYears) {
+            return "Under warranty (" + (warrantyYears - age) + " years remaining)";
+        }
+        return "Warranty expired";
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+         
